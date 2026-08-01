@@ -12,6 +12,13 @@ PostgreSQL el dataset sintético de transacciones financieras.
 El dataset original fue tomado desde kaggle en: 
 https://www.kaggle.com/datasets/ealaxi/paysim1.
 
+## Actualizaciones y bug fixes
+
+### Versión 0.1.1
+- Ahora alembic falla mejor al no poder establecer
+  conexión a PostgreSQL por UnicodeDecodeError.
+- Alembic no desactiva el logger del pipeline.
+
 ## Decisiones de diseño
 
 - Originalmente un proyecto de análisis, este evolucionó para
@@ -74,7 +81,7 @@ en PostgreSQL.
 Clona el repositorio y entra en su directorio:
 
 ```
-git clone (https://github.com/valszaque-pf/paysim-analysis-etl)
+git clone https://github.com/valszaque-pf/paysim-analysis-etl
 cd etl_pipeline
 ```
 
@@ -86,11 +93,15 @@ uv sync
 
 ## Configuración
 
-El archivo .env de ejemplo sólo contiene una constante que es DB_URL,
-la cual es utilizada en algunas partes del pipeline. los datos de 
-la variable deben ser reemplazados por el usuario, contraseña y puerto 
-de conexión que estén asignados a la instancia usada de postgreSQL
-Para el funcionamiento integral del script.
+El archivo .env de ejemplo sólo contiene la siguiente constante:
+
+```
+DB_URL=postgresql+psycopg2://user:password@localhost:5432/database
+```
+
+los datos de esta constante deben ser reemplazados por el `user`, 
+`password` y `database` que estén asignados a la instancia 
+usada de postgreSQL para el funcionamiento del script.
 
 ## Ejecución
 
@@ -120,12 +131,6 @@ uv run paysim-pipeline --batch-size 100000
 ```
 
 El valor predeterminado es de 200.000 filas.
-
-Para consultar todas las opciones:
-
-```
-uv run paysim-pipeline --help
-```
 
 ## Ejecución por etapas
 

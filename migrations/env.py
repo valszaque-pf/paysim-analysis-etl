@@ -19,7 +19,10 @@ if db_url:
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-if config.config_file_name is not None:
+if ( 
+    config.config_file_name is not None
+    and config.attributes.get("configure_logging", True)
+):
     fileConfig(
         config.config_file_name,
         disable_existing_loggers=False

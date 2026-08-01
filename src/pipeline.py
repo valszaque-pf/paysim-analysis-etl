@@ -3,6 +3,7 @@
 Orquestador principal del pipeline ETL del dataset paysim.
 """
 
+# imports
 from __future__ import annotations
 
 import argparse
@@ -11,41 +12,26 @@ import sys
 from dataclasses import dataclass
 
 import pandas as pd
-from alembic import command
-from alembic.config import Config
 
 from src.download import download_dataset
 from src.extract import extract
 from src.load import DEFAULT_BATCH_SIZE, load_paysim
-from src.paths import RAW_PATH, ROOT, ensure_directories
+from src.paths import RAW_PATH, ensure_directories
 from src.transform import save_transformed, transform
 from src.utils import logging_config
 from src.validate import validate_clean, validate_raw
+from src.migrations import run_migrations
 
 logger = logging.getLogger(__name__)
 
-
+# clases y funciones
 @dataclass(frozen=True)
 class PipelineResult:
-    """Resumen de una ejecución del pipeline."""
+    """
+    Resumen de una ejecución del pipeline.
+    """
 
     loaded_rows: int | None
-
-
-def run_migrations() -> None:
-    """
-    Crea o actualiza el esquema de PostgreSQL hasta la revisión
-    
-    más reciente definida con Alembic.
-    """
-    alembic_config = Config(str(ROOT / "alembic.ini"))
-    alembic_config.set_main_option(
-        "script_location", str(ROOT / "migrations")
-    )
-
-    logger.info("Aplicando migraciones de base de datos")
-    command.upgrade(alembic_config, "head")
-    logger.info("Migraciones aplicadas correctamente")
 
 
 def run_pipeline(
@@ -55,8 +41,7 @@ def run_pipeline(
 ) -> PipelineResult:
     """Ejecuta el pipeline ETL.
 
-    Las migraciones son optativas porque modifican el esquema de la base de
-    datos.
+    Las migraciones de esquema son optativas.
     """
     if batch_size <= 0:
         raise ValueError("batch_size debe ser mayor que cero")
@@ -93,7 +78,9 @@ def run_pipeline(
 
 
 def build_parser() -> argparse.ArgumentParser:
-    """Construye la interfaz de línea de comandos del pipeline."""
+    """
+    Construye la interfaz de línea de comandos del pipeline.
+    """
     parser = argparse.ArgumentParser(
         description="Ejecuta el pipeline ETL completo de PaySim."
     )
@@ -109,11 +96,12 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Cantidad de filas por lote durante la carga "
             f"(por defecto: {DEFAULT_BATCH_SIZE})."
-        ),
+        )
     )
     return parser
 
 
+# orquestador
 def main() -> None:
     """
     Procesa argumentos y ejecuta el pipeline desde la terminal.
