@@ -8,7 +8,7 @@ para pipeline.py
 import logging
 
 from alembic import command
-from alembic.config import 
+from alembic.config import Config
 
 from src.paths import ROOT
 
